@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Country Info</string>
+
+    <!-- General Navigation -->
+    <string name="nav_back_content_description">Back</string>
+    <string name="about_content_description">Action</string>
+
+    <!-- Country Info Screen -->
+    <string name="country_info_screen_title">Country Info</string>
+    <string name="country_info_error">Oops! An error occurred.</string>
+    <string name="country_info_refresh_button_text">Refresh</string>
+
+    <!-- Country Details Screen -->
+    <string name="country_details_error">Oops! An error occurred. Go back and try again.</string>
+
+    <!-- About Screen -->
+    <string name="about_screen_title">About</string>
+    <string name="about_screen_content">This app is developed by <b>Kodeco</b> for the purpose of learning about Android development.</string>
+    <string name="about_screen_version">Version: %s</string>
+    <string name="favorite">Favorite</string>
+    <string name="error_button_retry_text">Retry</string>
+</resources>
