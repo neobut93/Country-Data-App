@@ -1,5 +1,6 @@
 package com.kodeco.android.countryinfo.repositories
 
+import com.kodeco.android.countryinfo.database.CountryDao
 import com.kodeco.android.countryinfo.models.Country
 import com.kodeco.android.countryinfo.network.CountryService
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -8,6 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 
 class CountryRepositoryImpl(
     private val service: CountryService,
+    private val countryDao: CountryDao
 ) : CountryRepository {
 
     private var favorites = setOf<String>()
@@ -21,11 +23,13 @@ class CountryRepositoryImpl(
         _countries.value = emptyList()
         _countries.value = try {
             if (countriesResponse.isSuccessful) {
-                countriesResponse.body()!!
+                val countries = countriesResponse.body()!!
                     .toMutableList()
                     .map { country ->
                         country.copy(isFavorite = favorites.contains(country.commonName))
                     }
+                countryDao.addCountries(countries)
+                countries
             } else {
                 throw Throwable("Request failed: ${countriesResponse.message()}")
             }
