@@ -27,6 +27,4 @@ interface CountryDao {
 
     @Query("UPDATE countries SET isFavorite = :isFavorite WHERE commonName = :commonName")
     suspend fun setFavourite(isFavorite: Boolean, commonName: String)
-
-    //getFavorites() @query
 }

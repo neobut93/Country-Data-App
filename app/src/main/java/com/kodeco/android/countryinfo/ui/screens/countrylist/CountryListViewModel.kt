@@ -5,14 +5,17 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.kodeco.android.countryinfo.models.Country
 import com.kodeco.android.countryinfo.repositories.CountryRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class CountryListViewModel(
-    private val repository: CountryRepository,
+@HiltViewModel
+class CountryListViewModel @Inject constructor(
+    private val repository: CountryRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<CountryListState>(CountryListState.Loading)
@@ -32,13 +35,6 @@ class CountryListViewModel(
         }
 
         fetchCountries()
-    }
-
-    class CountryInfoViewModelFactory(private val repository: CountryRepository) :
-        ViewModelProvider.NewInstanceFactory() {
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>): T =
-            CountryListViewModel(repository) as T
     }
 
     fun fetchCountries() {

@@ -45,10 +45,8 @@ class CountryRepositoryImpl(
     override suspend fun favorite(country: Country) {
         favorites = if (favorites.contains(country.commonName)) {
             favorites - country.commonName
-            // todo add favorite to db
         } else {
             favorites + country.commonName
-            // todo remove favorite from db
         }
         val index = _countries.value.indexOf(country)
         val mutableCountries = _countries.value.toMutableList()
