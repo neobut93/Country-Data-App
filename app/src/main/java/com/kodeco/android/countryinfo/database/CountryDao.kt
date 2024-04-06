@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import com.kodeco.android.countryinfo.models.Country
 
 @Dao
@@ -22,9 +23,12 @@ interface CountryDao {
     @Query("SELECT * FROM countries WHERE commonName = :commonName")
     suspend fun getCountry(commonName: String): Country
 
-    @Delete
-    suspend fun deleteCountry(country: Country)
+    @Query("DELETE FROM countries")
+    suspend fun deleteAllCountries()
 
-    @Query("UPDATE countries SET isFavorite = :isFavorite WHERE commonName = :commonName")
-    suspend fun setFavourite(isFavorite: Boolean, commonName: String)
+    @Update
+    suspend fun updateCountry(country: Country)
+
+    @Query("SELECT * FROM countries WHERE isFavorite = 1")
+    suspend fun getFavoriteCountries(): List<Country>
 }

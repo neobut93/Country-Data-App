@@ -12,22 +12,24 @@ class CountryRepositoryImpl(
     private val countryDao: CountryDao
 ) : CountryRepository {
 
-    private var favorites = setOf<String>()
 
     private val _countries: MutableStateFlow<List<Country>> = MutableStateFlow(emptyList())
     override val countries: StateFlow<List<Country>> = _countries.asStateFlow()
 
     override suspend fun fetchCountries() {
+        val favorites = countryDao.getFavoriteCountries()
         _countries.value = emptyList()
-        _countries.value = try {
 
+        _countries.value = try {
             val countriesResponse = service.getAllCountries()
+
+            countryDao.deleteAllCountries()
 
             if (countriesResponse.isSuccessful) {
                 val countries = countriesResponse.body()!!
                     .toMutableList()
                     .map { country ->
-                        country.copy(isFavorite = favorites.contains(country.commonName))
+                        country.copy(isFavorite = favorites.any { it.commonName == country.commonName })
                     }
                 countryDao.addCountries(countries)
                 countries
@@ -43,14 +45,12 @@ class CountryRepositoryImpl(
         _countries.value.getOrNull(index)
 
     override suspend fun favorite(country: Country) {
-        favorites = if (favorites.contains(country.commonName)) {
-            favorites - country.commonName
-        } else {
-            favorites + country.commonName
-        }
         val index = _countries.value.indexOf(country)
         val mutableCountries = _countries.value.toMutableList()
-        mutableCountries[index] = mutableCountries[index].copy(isFavorite = favorites.contains(country.commonName))
+        val updatedCountry = country.copy(isFavorite = !country.isFavorite)
+        mutableCountries[index] = updatedCountry
+        countryDao.updateCountry(updatedCountry)
+
         _countries.value = mutableCountries.toList()
     }
 }
