@@ -13,7 +13,7 @@ interface CountryDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun addCountry(country: Country)
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addCountries(countries: List<Country>)
 
     @Query("SELECT * FROM countries")
@@ -24,4 +24,9 @@ interface CountryDao {
 
     @Delete
     suspend fun deleteCountry(country: Country)
+
+    @Query("UPDATE countries SET isFavorite = :isFavorite WHERE commonName = :commonName")
+    suspend fun setFavourite(isFavorite: Boolean, commonName: String)
+
+    //getFavorites() @query
 }

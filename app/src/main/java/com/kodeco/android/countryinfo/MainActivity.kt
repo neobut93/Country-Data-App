@@ -22,6 +22,8 @@ class MainActivity : ComponentActivity() {
         CountryDatabase.buildDatabase(this)
     }
 
+    //move to Application
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

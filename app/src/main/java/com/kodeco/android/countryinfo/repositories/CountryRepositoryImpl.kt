@@ -18,10 +18,11 @@ class CountryRepositoryImpl(
     override val countries: StateFlow<List<Country>> = _countries.asStateFlow()
 
     override suspend fun fetchCountries() {
-        val countriesResponse = service.getAllCountries()
-
         _countries.value = emptyList()
         _countries.value = try {
+
+            val countriesResponse = service.getAllCountries()
+
             if (countriesResponse.isSuccessful) {
                 val countries = countriesResponse.body()!!
                     .toMutableList()
@@ -31,10 +32,10 @@ class CountryRepositoryImpl(
                 countryDao.addCountries(countries)
                 countries
             } else {
-                throw Throwable("Request failed: ${countriesResponse.message()}")
+                throw Exception("Request failed: ${countriesResponse.message()}")
             }
         } catch (e: Exception) {
-            throw Throwable("Request failed: ${e.message}")
+            countryDao.getAllCountries()
         }
     }
 
@@ -44,8 +45,10 @@ class CountryRepositoryImpl(
     override suspend fun favorite(country: Country) {
         favorites = if (favorites.contains(country.commonName)) {
             favorites - country.commonName
+            // todo add favorite to db
         } else {
             favorites + country.commonName
+            // todo remove favorite from db
         }
         val index = _countries.value.indexOf(country)
         val mutableCountries = _countries.value.toMutableList()
