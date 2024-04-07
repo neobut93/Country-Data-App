@@ -24,8 +24,6 @@ class CountryListViewModel @Inject constructor(
 
     val uiState: StateFlow<CountryListState> = _uiState.asStateFlow()
 
-    //use for toggles
-
     init {
         viewModelScope.launch {
             repository
@@ -66,6 +64,16 @@ class CountryListViewModel @Inject constructor(
     fun setFavorite(isFavorite: Boolean) {
         viewModelScope.launch {
             prefs.toggleFavoritesFeature(isFavorite)
+        }
+    }
+
+    fun getDatabase(): Flow<Boolean> {
+        return prefs.getLocalStorageEnabled()
+    }
+
+    fun setDatabase(isDatabase: Boolean) {
+        viewModelScope.launch {
+            prefs.toggleLocalStorage(isDatabase)
         }
     }
 }

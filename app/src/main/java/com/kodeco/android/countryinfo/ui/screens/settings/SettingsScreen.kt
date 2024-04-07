@@ -34,8 +34,11 @@ fun SettingsScreen(
     onNavigateUp: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
-    val flow by viewModel.getFavorite().collectAsState(initial = false)
-    var checked by remember { mutableStateOf(flow) }
+    val favoritesBoolean by viewModel.getFavorite().collectAsState(initial = true)
+    var favoritesToggle by remember { mutableStateOf(favoritesBoolean) }
+
+    val datastoreBoolean by viewModel.getDatabase().collectAsState(initial = true)
+    var datastoreToggle by remember { mutableStateOf(datastoreBoolean) }
 
     Scaffold(
         topBar = {
@@ -68,16 +71,37 @@ fun SettingsScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Enable Local Storage",
+                    text = "Enable Favorites Feature",
                     modifier = Modifier.weight(1f),
                 )
                 Switch(
-                    checked = flow,
+                    checked = favoritesBoolean,
                     onCheckedChange = {
                         scope.launch {
                             viewModel.setFavorite(it)
                         }
-                        checked = it
+                        favoritesToggle = it
+                    },
+                    modifier = Modifier.weight(0.3f)
+                )
+            }
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier
+                    .padding(start = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Enable Local Storage",
+                    modifier = Modifier.weight(1f),
+                )
+                Switch(
+                    checked = datastoreBoolean,
+                    onCheckedChange = {
+                        scope.launch {
+                            viewModel.setDatabase(it)
+                        }
+                        datastoreToggle = it
                     },
                     modifier = Modifier.weight(0.3f)
                 )

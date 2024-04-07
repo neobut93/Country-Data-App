@@ -17,12 +17,24 @@ private val Context.dataStore by preferencesDataStore(name = STORE_NAME)
 
 class CountryPrefsImpl @Inject constructor(@ApplicationContext context: Context) : CountryPrefs {
 
-    val favoriteKey = booleanPreferencesKey(STORE_NAME)
+    val favoriteKey = booleanPreferencesKey("favorite_key")
+    val databaseKey = booleanPreferencesKey("database_key")
 
     private val dataStore = context.dataStore
 
     override fun getLocalStorageEnabled(): Flow<Boolean> {
-        TODO("Not yet implemented")
+        return dataStore.data
+            .catch { exception ->
+                if (exception is IOException) {
+                    emit(emptyPreferences())
+                } else {
+                    throw exception
+                }
+            }
+            .map { pref ->
+                val isDatabase = pref[databaseKey] ?: true
+                isDatabase
+            }
     }
 
     override fun getFavoritesFeatureEnabled(): Flow<Boolean> {
@@ -40,8 +52,10 @@ class CountryPrefsImpl @Inject constructor(@ApplicationContext context: Context)
             }
     }
 
-    override suspend fun toggleLocalStorage() {
-        TODO("Not yet implemented")
+    override suspend fun toggleLocalStorage(value: Boolean) {
+        dataStore.edit { pref ->
+            pref[databaseKey] = value
+        }
     }
 
     override suspend fun toggleFavoritesFeature(value: Boolean) {

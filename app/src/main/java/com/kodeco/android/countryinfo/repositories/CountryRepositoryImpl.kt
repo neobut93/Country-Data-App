@@ -1,31 +1,41 @@
 package com.kodeco.android.countryinfo.repositories
 
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.viewModelScope
 import com.kodeco.android.countryinfo.database.CountryDao
+import com.kodeco.android.countryinfo.datastore.CountryPrefsImpl
 import com.kodeco.android.countryinfo.models.Country
 import com.kodeco.android.countryinfo.network.CountryService
+import com.kodeco.android.countryinfo.ui.screens.countrylist.CountryListViewModel
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 class CountryRepositoryImpl(
     private val service: CountryService,
-    private val countryDao: CountryDao
+    private val countryDao: CountryDao,
 ) : CountryRepository {
-
 
     private val _countries: MutableStateFlow<List<Country>> = MutableStateFlow(emptyList())
     override val countries: StateFlow<List<Country>> = _countries.asStateFlow()
 
+
     override suspend fun fetchCountries() {
         val favorites = countryDao.getFavoriteCountries()
+
+        try {
         _countries.value = emptyList()
 
-        _countries.value = try {
             val countriesResponse = service.getAllCountries()
 
             countryDao.deleteAllCountries()
 
-            if (countriesResponse.isSuccessful) {
+            _countries.value =  if (countriesResponse.isSuccessful) {
                 val countries = countriesResponse.body()!!
                     .toMutableList()
                     .map { country ->
@@ -34,10 +44,12 @@ class CountryRepositoryImpl(
                 countryDao.addCountries(countries)
                 countries
             } else {
-                throw Exception("Request failed: ${countriesResponse.message()}")
+                throw Throwable("Request failed: ${countriesResponse.message()}")
             }
         } catch (e: Exception) {
-            countryDao.getAllCountries()
+            // 1 or 2
+            throw Exception("Country data is not available")
+            //_countries.value = countryDao.getAllCountries()
         }
     }
 
