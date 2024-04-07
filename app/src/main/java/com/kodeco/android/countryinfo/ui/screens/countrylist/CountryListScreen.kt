@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Help
-import androidx.compose.material.icons.automirrored.outlined.HelpOutline
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -19,18 +18,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import com.kodeco.android.countryinfo.R
-import com.kodeco.android.countryinfo.models.Country
-import com.kodeco.android.countryinfo.repositories.CountryRepository
-import com.kodeco.android.countryinfo.sample.sampleCountries
-import com.kodeco.android.countryinfo.sample.sampleCountry
 import com.kodeco.android.countryinfo.ui.components.CountryInfoList
 import com.kodeco.android.countryinfo.ui.components.Error
 import com.kodeco.android.countryinfo.ui.components.Loading
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 
 @SuppressLint("UnusedCrossfadeTargetStateParameter")
 @Composable
@@ -41,8 +32,7 @@ fun CountryListScreen(
     onSettingsTap: () -> Unit,
 ) {
     val state by viewModel.uiState.collectAsState()
-    val favoritesFlow by viewModel.getFavorite().collectAsState(initial = false)
-    val datastoreFlow by viewModel.getDatabase().collectAsState(initial = false)
+    val favoritesState by viewModel.getFavorite().collectAsState(initial = false)
 
     Scaffold(
         topBar = {
@@ -86,7 +76,7 @@ fun CountryListScreen(
                     onRefreshTap = viewModel::fetchCountries,
                     onCountryRowTap = onCountryRowTap,
                     onCountryRowFavorite = viewModel::favorite,
-                    currentToggleState = favoritesFlow
+                    currentToggleState = favoritesState
                 )
                 is CountryListState.Error -> Error(
                     userFriendlyMessageText = stringResource(id = R.string.country_info_error),

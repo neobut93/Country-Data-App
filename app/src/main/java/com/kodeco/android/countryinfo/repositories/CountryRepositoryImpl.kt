@@ -1,29 +1,23 @@
 package com.kodeco.android.countryinfo.repositories
 
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.asLiveData
 import com.kodeco.android.countryinfo.database.CountryDao
 import com.kodeco.android.countryinfo.datastore.CountryPrefsImpl
 import com.kodeco.android.countryinfo.models.Country
 import com.kodeco.android.countryinfo.network.CountryService
-import com.kodeco.android.countryinfo.ui.screens.countrylist.CountryListViewModel
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 
 class CountryRepositoryImpl(
     private val service: CountryService,
     private val countryDao: CountryDao,
-) : CountryRepository {
+    private val prefs: CountryPrefsImpl,
+    ) : CountryRepository {
 
     private val _countries: MutableStateFlow<List<Country>> = MutableStateFlow(emptyList())
     override val countries: StateFlow<List<Country>> = _countries.asStateFlow()
-
+    private var databaseState = prefs.getLocalStorageEnabled().asLiveData()
 
     override suspend fun fetchCountries() {
         val favorites = countryDao.getFavoriteCountries()
@@ -47,9 +41,12 @@ class CountryRepositoryImpl(
                 throw Throwable("Request failed: ${countriesResponse.message()}")
             }
         } catch (e: Exception) {
-            // 1 or 2
-            throw Exception("Country data is not available")
-            //_countries.value = countryDao.getAllCountries()
+
+            if(databaseState.value == true) {
+                _countries.value = countryDao.getAllCountries()
+            } else {
+                throw Exception("Country data is not available")
+            }
         }
     }
 
@@ -62,7 +59,6 @@ class CountryRepositoryImpl(
         val updatedCountry = country.copy(isFavorite = !country.isFavorite)
         mutableCountries[index] = updatedCountry
         countryDao.updateCountry(updatedCountry)
-
         _countries.value = mutableCountries.toList()
     }
 }

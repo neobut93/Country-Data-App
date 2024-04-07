@@ -14,6 +14,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineDispatcher
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Singleton
@@ -53,5 +54,6 @@ class CountryInfoSingletonModule {
     fun providesCountryRepository(
         service: CountryService,
         database: CountryDatabase,
-    ): CountryRepository = CountryRepositoryImpl(service, database.countryDao())
+        countryPrefs: CountryPrefsImpl,
+    ): CountryRepository = CountryRepositoryImpl(service, database.countryDao(), countryPrefs)
 }
