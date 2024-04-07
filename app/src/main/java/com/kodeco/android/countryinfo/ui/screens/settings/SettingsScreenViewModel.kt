@@ -8,18 +8,18 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-@HiltViewModel
-class SettingsScreenViewModel @Inject constructor(
-    private val prefs: CountryPrefsImpl
-) : ViewModel() {
-
-    fun getFavorite(): Flow<Boolean> {
-        return prefs.getFavoritesFeatureEnabled()
-    }
-
-    fun setFavorite(isFavorite: Boolean) {
-        viewModelScope.launch {
-            prefs.toggleFavoritesFeature(isFavorite)
-        }
-    }
-}
+//@HiltViewModel
+//class SettingsScreenViewModel @Inject constructor(
+//    private val prefs: CountryPrefsImpl
+//) : ViewModel() {
+//
+//    fun getFavorite(): Flow<Boolean> {
+//        return prefs.getFavoritesFeatureEnabled()
+//    }
+//
+//    fun setFavorite(isFavorite: Boolean) {
+//        viewModelScope.launch {
+//            prefs.toggleFavoritesFeature(isFavorite)
+//        }
+//    }
+//}

@@ -1,5 +1,6 @@
 package com.kodeco.android.countryinfo.ui.components
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,10 +10,14 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.kodeco.android.countryinfo.datastore.CountryPrefsImpl
 import com.kodeco.android.countryinfo.models.Country
 import com.kodeco.android.countryinfo.sample.sampleCountry
 
@@ -23,6 +28,10 @@ fun CountryInfoRow(
     onTap: () -> Unit,
     onFavorite: () -> Unit,
 ) {
+    val context = LocalContext.current
+    val data = CountryPrefsImpl(context)
+    val flow by data.getFavoritesFeatureEnabled().collectAsState(initial = false)
+
     Card(
         onClick = onTap,
         modifier = Modifier
@@ -38,9 +47,10 @@ fun CountryInfoRow(
                 Text(text = "Name: ${country.commonName}")
                 Text(text = "Capital: ${country.mainCapital}")
             }
-            FavoriteStar(country = country, onTap = onFavorite)
+            if(flow) {
+                FavoriteStar(country = country, onTap = onFavorite)
+            }
         }
-
     }
 }
 
