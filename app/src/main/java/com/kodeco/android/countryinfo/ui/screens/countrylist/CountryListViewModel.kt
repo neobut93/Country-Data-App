@@ -1,8 +1,14 @@
 package com.kodeco.android.countryinfo.ui.screens.countrylist
 
+import android.util.Log
+import androidx.compose.runtime.collectAsState
+import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.kodeco.android.countryinfo.dataStore.CountryPrefsImpl
+import com.kodeco.android.countryinfo.dataStore.PreferenceDataStoreConstants.NAME_KEY
+import com.kodeco.android.countryinfo.dataStore.PreferenceDataStoreHelper
 import com.kodeco.android.countryinfo.models.Country
 import com.kodeco.android.countryinfo.repositories.CountryRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,8 +21,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CountryListViewModel @Inject constructor(
-    private val repository: CountryRepository
-) : ViewModel() {
+    private val repository: CountryRepository,
+    ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<CountryListState>(CountryListState.Loading)
 
@@ -54,4 +60,19 @@ class CountryListViewModel @Inject constructor(
             repository.favorite(country)
         }
     }
+
+
+//    fun setCountryName(name: String) {
+//        viewModelScope.launch {
+//            prefs.putPreference(NAME_KEY, name)
+//        }
+//    }
+//
+//    fun getCountryName(): String {
+//        var name = ""
+//        viewModelScope.launch {
+//            name =  prefs.getFirstPreference(NAME_KEY,"")
+//        }
+//        return name
+//    }
 }

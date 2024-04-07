@@ -84,23 +84,23 @@ fun CountryListScreen(
     }
 }
 
-@Preview
-@Composable
-fun CountryInfoScreenPreview() {
-    CountryListScreen(
-        viewModel = CountryListViewModel(
-            repository = object : CountryRepository {
-                override val countries: Flow<List<Country>>
-                    get() = MutableStateFlow(sampleCountries).asStateFlow()
-
-                override suspend fun fetchCountries() {}
-
-                override fun getCountry(index: Int): Country = sampleCountry
-
-                override suspend fun favorite(country: Country) {}
-            },
-        ),
-        onCountryRowTap = {},
-        onAboutTap = {},
-    )
-}
+//@Preview
+//@Composable
+//fun CountryInfoScreenPreview() {
+//    CountryListScreen(
+//        viewModel = CountryListViewModel(
+//            repository = object : CountryRepository {
+//                override val countries: Flow<List<Country>>
+//                    get() = MutableStateFlow(sampleCountries).asStateFlow()
+//
+//                override suspend fun fetchCountries() {}
+//
+//                override fun getCountry(index: Int): Country = sampleCountry
+//
+//                override suspend fun favorite(country: Country) {}
+//            },
+//        ),
+//        onCountryRowTap = {},
+//        onAboutTap = {},
+//    )
+//}
