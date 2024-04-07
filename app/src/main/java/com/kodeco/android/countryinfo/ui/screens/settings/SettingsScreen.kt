@@ -22,7 +22,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.kodeco.android.countryinfo.R
@@ -34,12 +33,7 @@ fun SettingsScreen(
     viewModel: CountryListViewModel,
     onNavigateUp: () -> Unit,
 ) {
-    val context = LocalContext.current
-    //val data = CountryPrefsImpl(context)
-
-    //val flow by data.getFavoritesFeatureEnabled().collectAsState(initial = false)
     val scope = rememberCoroutineScope()
-
     val flow by viewModel.getFavorite().collectAsState(initial = false)
     var checked by remember { mutableStateOf(flow) }
 

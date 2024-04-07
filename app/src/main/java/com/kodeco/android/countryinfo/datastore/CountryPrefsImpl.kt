@@ -1,8 +1,6 @@
 package com.kodeco.android.countryinfo.datastore
 
 import android.content.Context
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
@@ -14,18 +12,13 @@ import kotlinx.coroutines.flow.map
 import java.io.IOException
 import javax.inject.Inject
 
-// create object
+private const val STORE_NAME = "country_prefs"
+private val Context.dataStore by preferencesDataStore(name = STORE_NAME)
+
 class CountryPrefsImpl @Inject constructor(@ApplicationContext context: Context) : CountryPrefs {
 
-//    companion object {
-//        private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settingPrefs")
-//        val favoriteKey = booleanPreferencesKey("FAVORITE_KEY")
-//    }
+    val favoriteKey = booleanPreferencesKey(STORE_NAME)
 
-    // move to constants or leave here
-    val favoriteKey = booleanPreferencesKey("FAVORITE_KEY")
-
-    private val Context.dataStore by preferencesDataStore(name = "settingPrefs")
     private val dataStore = context.dataStore
 
     override fun getLocalStorageEnabled(): Flow<Boolean> {
