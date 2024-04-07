@@ -22,11 +22,8 @@ fun CountryInfoRow(
     country: Country,
     onTap: () -> Unit,
     onFavorite: () -> Unit,
+    currentToggleState: Boolean
 ) {
-//    val context = LocalContext.current
-//    val data = CountryPrefsImpl(context)
-//    val flow by data.getFavoritesFeatureEnabled().collectAsState(initial = false)
-
     Card(
         onClick = onTap,
         modifier = Modifier
@@ -42,9 +39,9 @@ fun CountryInfoRow(
                 Text(text = "Name: ${country.commonName}")
                 Text(text = "Capital: ${country.mainCapital}")
             }
-           // if(flow) {
+            if(currentToggleState) {
                 FavoriteStar(country = country, onTap = onFavorite)
-           // }
+            }
         }
     }
 }
@@ -56,5 +53,6 @@ fun CountryInfoRowPreview() {
         country = sampleCountry,
         onTap = {},
         onFavorite = {},
+        currentToggleState = false
     )
 }

@@ -41,6 +41,7 @@ fun CountryListScreen(
     onSettingsTap: () -> Unit,
 ) {
     val state by viewModel.uiState.collectAsState()
+    val flow by viewModel.getFavorite().collectAsState(initial = false)
 
     Scaffold(
         topBar = {
@@ -84,6 +85,7 @@ fun CountryListScreen(
                     onRefreshTap = viewModel::fetchCountries,
                     onCountryRowTap = onCountryRowTap,
                     onCountryRowFavorite = viewModel::favorite,
+                    currentToggleState = flow
                 )
                 is CountryListState.Error -> Error(
                     userFriendlyMessageText = stringResource(id = R.string.country_info_error),

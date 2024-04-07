@@ -21,6 +21,7 @@ fun CountryInfoList(
     onRefreshTap: () -> Unit,
     onCountryRowTap: (countryIndex: Int) -> Unit,
     onCountryRowFavorite: (country: Country) -> Unit,
+    currentToggleState: Boolean
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         Row(
@@ -40,7 +41,8 @@ fun CountryInfoList(
                     },
                     onFavorite = {
                         onCountryRowFavorite(country)
-                    }
+                    },
+                    currentToggleState
                 )
             }
         }
