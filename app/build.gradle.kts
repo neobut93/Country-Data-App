@@ -90,6 +90,8 @@ dependencies {
     kapt(libs.hilt.android.compiler)
 
     implementation(libs.prefs)
+    implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.7.0")
+
 
     testImplementation(libs.junit)
 

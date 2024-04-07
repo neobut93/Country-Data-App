@@ -1,11 +1,12 @@
 package com.kodeco.android.countryinfo.ui.screens.countrylist
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.kodeco.android.countryinfo.datastore.CountryPrefsImpl
 import com.kodeco.android.countryinfo.models.Country
 import com.kodeco.android.countryinfo.repositories.CountryRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,7 +16,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CountryListViewModel @Inject constructor(
-    private val repository: CountryRepository
+    private val repository: CountryRepository,
+    private val prefs: CountryPrefsImpl
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<CountryListState>(CountryListState.Loading)
@@ -54,4 +56,15 @@ class CountryListViewModel @Inject constructor(
             repository.favorite(country)
         }
     }
+
+    fun getFavorite(): Flow<Boolean> {
+        return prefs.getFavoritesFeatureEnabled()
+    }
+
+    fun setFavorite(isFavorite: Boolean) {
+        viewModelScope.launch {
+            prefs.toggleFavoritesFeature(isFavorite)
+        }
+    }
+
 }

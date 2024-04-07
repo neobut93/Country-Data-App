@@ -1,7 +1,5 @@
 package com.kodeco.android.countryinfo.ui.screens.about
 
-import android.content.res.Configuration.UI_MODE_NIGHT_NO
-import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,22 +10,34 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import com.kodeco.android.countryinfo.BuildConfig
 import com.kodeco.android.countryinfo.R
-import com.kodeco.android.countryinfo.ui.theme.MyApplicationTheme
+import com.kodeco.android.countryinfo.ui.screens.countrylist.CountryListViewModel
 
 @Composable
 fun AboutScreen(
+    viewModel: CountryListViewModel,
     onNavigateUp: () -> Unit,
 ) {
+    val flow by viewModel.getFavorite().collectAsState(false)
+
+    var checked by remember { mutableStateOf(flow) }
+
+
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -65,15 +75,24 @@ fun AboutScreen(
                 style = MaterialTheme.typography.headlineMedium,
                 textAlign = TextAlign.Center,
             )
+
+            Switch(
+                checked = flow,
+                onCheckedChange = {
+                    viewModel.setFavorite(it)
+                    checked = it
+                }
+            )
+            Text(text = "Flow: $flow")
         }
     }
 }
 
-@Preview(uiMode = UI_MODE_NIGHT_YES)
-@Preview(uiMode = UI_MODE_NIGHT_NO)
-@Composable
-fun AboutScreenPreview() {
-    MyApplicationTheme {
-        AboutScreen { }
-    }
-}
+//@Preview(uiMode = UI_MODE_NIGHT_YES)
+//@Preview(uiMode = UI_MODE_NIGHT_NO)
+//@Composable
+//fun AboutScreenPreview() {
+//    MyApplicationTheme {
+//        AboutScreen { }
+//    }
+//}

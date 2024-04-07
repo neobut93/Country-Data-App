@@ -2,6 +2,8 @@ package com.kodeco.android.countryinfo.di
 
 import android.content.Context
 import com.kodeco.android.countryinfo.database.CountryDatabase
+import com.kodeco.android.countryinfo.datastore.CountryPrefs
+import com.kodeco.android.countryinfo.datastore.CountryPrefsImpl
 import com.kodeco.android.countryinfo.network.CountryService
 import com.kodeco.android.countryinfo.network.adapters.CountryAdapter
 import com.kodeco.android.countryinfo.repositories.CountryRepository
@@ -39,6 +41,12 @@ class CountryInfoSingletonModule {
     fun provideCountryDatabase(@ApplicationContext applicationContext: Context): CountryDatabase {
         return CountryDatabase.buildDatabase(applicationContext)
     }
+
+    @Provides
+    @Singleton
+    fun provideCountryPrefs(@ApplicationContext applicationContext: Context
+    ): CountryPrefs = CountryPrefsImpl(applicationContext)
+
 
     @Provides
     @Singleton
