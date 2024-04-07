@@ -42,10 +42,10 @@ class CountryInfoSingletonModule {
         return CountryDatabase.buildDatabase(applicationContext)
     }
 
-//    @Provides
-//    @Singleton
-//    fun provideCountryPrefs(@ApplicationContext applicationContext: Context
-//    ): CountryPrefs = CountryPrefsImpl(applicationContext)
+    @Provides
+    @Singleton
+    fun provideCountryPrefs(@ApplicationContext applicationContext: Context
+    ): CountryPrefs = CountryPrefsImpl(applicationContext)
 
 
     @Provides

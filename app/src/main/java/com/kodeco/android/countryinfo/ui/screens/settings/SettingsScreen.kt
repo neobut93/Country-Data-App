@@ -14,7 +14,6 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -25,23 +24,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kodeco.android.countryinfo.R
-import com.kodeco.android.countryinfo.datastore.CountryPrefsImpl
-import com.kodeco.android.countryinfo.ui.theme.MyApplicationTheme
+import com.kodeco.android.countryinfo.ui.screens.countrylist.CountryListViewModel
 import kotlinx.coroutines.launch
 
 @Composable
 fun SettingsScreen(
+    viewModel: CountryListViewModel,
     onNavigateUp: () -> Unit,
 ) {
     val context = LocalContext.current
-    val data = CountryPrefsImpl(context)
+    //val data = CountryPrefsImpl(context)
 
-    val flow by data.getFavoritesFeatureEnabled().collectAsState(initial = false)
-    var checked by remember { mutableStateOf(flow) }
+    //val flow by data.getFavoritesFeatureEnabled().collectAsState(initial = false)
     val scope = rememberCoroutineScope()
+
+    val flow by viewModel.getFavorite().collectAsState(initial = false)
+    var checked by remember { mutableStateOf(flow) }
 
     Scaffold(
         topBar = {
@@ -81,7 +81,7 @@ fun SettingsScreen(
                     checked = flow,
                     onCheckedChange = {
                         scope.launch {
-                            data.toggleFavoritesFeature(it)
+                            viewModel.setFavorite(it)
                         }
                         checked = it
                     },
@@ -92,10 +92,10 @@ fun SettingsScreen(
     }
 }
 
-@Preview
-@Composable
-fun SettingsScreenPreview() {
-    MyApplicationTheme {
-        SettingsScreen { }
-    }
-}
+//@Preview
+//@Composable
+//fun SettingsScreenPreview() {
+//    MyApplicationTheme {
+//        SettingsScreen { }
+//    }
+//}

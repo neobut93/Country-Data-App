@@ -51,6 +51,7 @@ fun CountryInfoNavHost() {
             SettingsScreen(
                // viewModel = hiltViewModel(),
                 onNavigateUp = { navController.navigateUp() },
+                viewModel = hiltViewModel()
             )
         }
     }
