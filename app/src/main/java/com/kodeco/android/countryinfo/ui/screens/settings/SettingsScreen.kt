@@ -1,7 +1,5 @@
-package com.kodeco.android.countryinfo.ui.screens.about
+package com.kodeco.android.countryinfo.ui.screens.settings
 
-import android.content.res.Configuration.UI_MODE_NIGHT_NO
-import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,7 +8,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -24,22 +21,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
-import com.kodeco.android.countryinfo.BuildConfig
 import com.kodeco.android.countryinfo.R
-import com.kodeco.android.countryinfo.ui.screens.countrylist.CountryListViewModel
-import com.kodeco.android.countryinfo.ui.theme.MyApplicationTheme
 
 @Composable
-fun AboutScreen(
+fun SettingsScreen(
+    viewModel: SettingsScreenViewModel,
     onNavigateUp: () -> Unit,
 ) {
+    val flow by viewModel.getFavorite().collectAsState(false)
+    var checked by remember { mutableStateOf(flow) }
+
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = stringResource(id = R.string.about_screen_title))
+                    Text(text = stringResource(R.string.settings))
                 },
                 navigationIcon = {
                     IconButton(onClick = {
@@ -58,29 +54,17 @@ fun AboutScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding),
-            horizontalAlignment = Alignment.CenterHorizontally,
+            horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.SpaceAround,
         ) {
-            Text(
-                text = stringResource(id = R.string.about_screen_content),
-                style = MaterialTheme.typography.headlineMedium,
-                textAlign = TextAlign.Center,
+            Switch(
+                checked = flow,
+                onCheckedChange = {
+                    viewModel.setFavorite(it)
+                    checked = it
+                }
             )
-
-            Text(
-                text = stringResource(id = R.string.about_screen_version, BuildConfig.VERSION_NAME),
-                style = MaterialTheme.typography.headlineMedium,
-                textAlign = TextAlign.Center,
-            )
+            Text(text = "Flow: $flow")
         }
-    }
-}
-
-@Preview(uiMode = UI_MODE_NIGHT_YES)
-@Preview(uiMode = UI_MODE_NIGHT_NO)
-@Composable
-fun AboutScreenPreview() {
-    MyApplicationTheme {
-        AboutScreen { }
     }
 }
