@@ -1,14 +1,20 @@
 package com.kodeco.android.countryinfo.repositories
 
 import android.util.Log
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.lifecycle.asLiveData
 import com.kodeco.android.countryinfo.database.CountryDao
 import com.kodeco.android.countryinfo.datastore.CountryPrefsImpl
 import com.kodeco.android.countryinfo.models.Country
 import com.kodeco.android.countryinfo.network.CountryService
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.withContext
 import java.lang.NullPointerException
 
 class CountryRepositoryImpl(
@@ -20,7 +26,11 @@ class CountryRepositoryImpl(
     private val _countries: MutableStateFlow<List<Country>> = MutableStateFlow(emptyList())
     override val countries: StateFlow<List<Country>> = _countries.asStateFlow()
 
-    private var databaseState = prefs.getLocalStorageEnabled().asLiveData()
+    suspend fun getBoolean(): Boolean? {
+       return coroutineScope {
+            prefs.getToggle()
+        }
+    }
 
     override suspend fun fetchCountries() {
         val favorites = countryDao.getFavoriteCountries()
@@ -44,14 +54,11 @@ class CountryRepositoryImpl(
                 throw Exception("Request failed: ${countriesResponse.message()}")
             }
         } catch (e: Exception) {
-            val status = databaseState.value
-            Log.d("GGG", status.toString())
-//            if (databaseState.value!!) {
-//                countryDao.getAllCountries()
-//            } else {
-//                throw Exception("Error")
-//            }
-            countryDao.getAllCountries()
+            if (getBoolean()==true) {
+                countryDao.getAllCountries()
+            } else {
+                throw Exception("Exception")
+            }
         }
     }
 

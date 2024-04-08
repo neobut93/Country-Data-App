@@ -8,6 +8,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import java.io.IOException
 import javax.inject.Inject
@@ -62,5 +63,10 @@ class CountryPrefsImpl @Inject constructor(@ApplicationContext context: Context)
         dataStore.edit { pref ->
             pref[favoriteKey] = value
         }
+    }
+
+    suspend fun getToggle(): Boolean? {
+        val toggle =  dataStore.data.first()
+        return toggle[databaseKey]
     }
 }
