@@ -49,7 +49,6 @@ fun CountryInfoNavHost() {
 
         composable(Screen.Settings.path) {
             SettingsScreen(
-               // viewModel = hiltViewModel(),
                 onNavigateUp = { navController.navigateUp() },
                 viewModel = hiltViewModel()
             )
