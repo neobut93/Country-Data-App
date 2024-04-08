@@ -32,7 +32,7 @@ fun CountryListScreen(
     onSettingsTap: () -> Unit,
 ) {
     val state by viewModel.uiState.collectAsState()
-    val favoritesState by viewModel.getFavorite().collectAsState(initial = false)
+    val favoritesState by viewModel.getFavorite().collectAsState(initial = true)
 
     Scaffold(
         topBar = {

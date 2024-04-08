@@ -1,5 +1,6 @@
 package com.kodeco.android.countryinfo.repositories
 
+import android.util.Log
 import androidx.lifecycle.asLiveData
 import com.kodeco.android.countryinfo.database.CountryDao
 import com.kodeco.android.countryinfo.datastore.CountryPrefsImpl
@@ -8,6 +9,7 @@ import com.kodeco.android.countryinfo.network.CountryService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import java.lang.NullPointerException
 
 class CountryRepositoryImpl(
     private val service: CountryService,
@@ -17,19 +19,20 @@ class CountryRepositoryImpl(
 
     private val _countries: MutableStateFlow<List<Country>> = MutableStateFlow(emptyList())
     override val countries: StateFlow<List<Country>> = _countries.asStateFlow()
+
     private var databaseState = prefs.getLocalStorageEnabled().asLiveData()
 
     override suspend fun fetchCountries() {
         val favorites = countryDao.getFavoriteCountries()
 
-        try {
         _countries.value = emptyList()
 
+        _countries.value = try {
             val countriesResponse = service.getAllCountries()
 
             countryDao.deleteAllCountries()
 
-            _countries.value =  if (countriesResponse.isSuccessful) {
+            if (countriesResponse.isSuccessful) {
                 val countries = countriesResponse.body()!!
                     .toMutableList()
                     .map { country ->
@@ -38,15 +41,17 @@ class CountryRepositoryImpl(
                 countryDao.addCountries(countries)
                 countries
             } else {
-                throw Throwable("Request failed: ${countriesResponse.message()}")
+                throw Exception("Request failed: ${countriesResponse.message()}")
             }
         } catch (e: Exception) {
-
-            if(databaseState.value == true) {
-                _countries.value = countryDao.getAllCountries()
-            } else {
-                throw Exception("Country data is not available")
-            }
+            val status = databaseState.value
+            Log.d("GGG", status.toString())
+//            if (databaseState.value!!) {
+//                countryDao.getAllCountries()
+//            } else {
+//                throw Exception("Error")
+//            }
+            countryDao.getAllCountries()
         }
     }
 
