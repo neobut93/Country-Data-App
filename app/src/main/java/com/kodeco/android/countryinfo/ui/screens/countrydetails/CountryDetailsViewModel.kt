@@ -4,26 +4,20 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.kodeco.android.countryinfo.repositories.CountryRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.lang.reflect.Constructor
+import javax.inject.Inject
 
-class CountryDetailsViewModel(
-    private val repository: CountryRepository,
-) : ViewModel() {
+@HiltViewModel
+class CountryDetailsViewModel
+@Inject constructor(private val repository: CountryRepository) : ViewModel() {
 
     private val _uiState = MutableStateFlow<CountryDetailsState>(CountryDetailsState.Loading)
 
     val uiState: StateFlow<CountryDetailsState> = _uiState
-
-    class CountryDetailsViewModelFactory(
-        private val repository: CountryRepository,
-    ) :
-        ViewModelProvider.NewInstanceFactory() {
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>): T =
-            CountryDetailsViewModel(repository) as T
-    }
 
     fun getCountryDetails(countryIndex: Int) {
         viewModelScope.launch {

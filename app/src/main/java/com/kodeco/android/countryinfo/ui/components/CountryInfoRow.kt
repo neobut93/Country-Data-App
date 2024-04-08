@@ -22,6 +22,7 @@ fun CountryInfoRow(
     country: Country,
     onTap: () -> Unit,
     onFavorite: () -> Unit,
+    currentToggleState: Boolean
 ) {
     Card(
         onClick = onTap,
@@ -38,9 +39,10 @@ fun CountryInfoRow(
                 Text(text = "Name: ${country.commonName}")
                 Text(text = "Capital: ${country.mainCapital}")
             }
-            FavoriteStar(country = country, onTap = onFavorite)
+            if(currentToggleState) {
+                FavoriteStar(country = country, onTap = onFavorite)
+            }
         }
-
     }
 }
 
@@ -51,5 +53,6 @@ fun CountryInfoRowPreview() {
         country = sampleCountry,
         onTap = {},
         onFavorite = {},
+        currentToggleState = false
     )
 }

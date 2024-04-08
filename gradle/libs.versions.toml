@@ -23,6 +23,7 @@ espresso="3.5.1"
 room="2.6.0"
 hilt="2.48"
 hilt-nav="1.1.0-rc01"
+prefs="1.0.0"
 
 [libraries]
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
@@ -76,6 +77,9 @@ room-compiler = { module = "androidx.room:room-compiler", version.ref="room" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref="hilt" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
 hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hilt-nav" }
+
+# Preferences
+prefs = {module = "androidx.datastore:datastore-preferences", version.ref = "prefs" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

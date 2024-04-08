@@ -1,36 +1,56 @@
 package com.kodeco.android.countryinfo.repositories
 
+import com.kodeco.android.countryinfo.database.CountryDao
+import com.kodeco.android.countryinfo.datastore.CountryPrefsImpl
 import com.kodeco.android.countryinfo.models.Country
 import com.kodeco.android.countryinfo.network.CountryService
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class CountryRepositoryImpl(
     private val service: CountryService,
+    private val countryDao: CountryDao,
+    private val prefs: CountryPrefsImpl,
 ) : CountryRepository {
-
-    private var favorites = setOf<String>()
 
     private val _countries: MutableStateFlow<List<Country>> = MutableStateFlow(emptyList())
     override val countries: StateFlow<List<Country>> = _countries.asStateFlow()
 
+    private suspend fun getLocalStorageToggleStatus(): Boolean? {
+        return coroutineScope {
+            prefs.getLocalStorageToggle()
+        }
+    }
+
     override suspend fun fetchCountries() {
-        val countriesResponse = service.getAllCountries()
+        val favorites = countryDao.getFavoriteCountries()
 
         _countries.value = emptyList()
+
         _countries.value = try {
+            val countriesResponse = service.getAllCountries()
+
+            countryDao.deleteAllCountries()
+
             if (countriesResponse.isSuccessful) {
-                countriesResponse.body()!!
+                val countries = countriesResponse.body()!!
                     .toMutableList()
                     .map { country ->
-                        country.copy(isFavorite = favorites.contains(country.commonName))
+                        country.copy(isFavorite = favorites.any { it.commonName == country.commonName })
                     }
+                countryDao.addCountries(countries)
+                countries
             } else {
-                throw Throwable("Request failed: ${countriesResponse.message()}")
+                throw Exception("Request failed: ${countriesResponse.message()}")
             }
         } catch (e: Exception) {
-            throw Throwable("Request failed: ${e.message}")
+            if (getLocalStorageToggleStatus() == true || getLocalStorageToggleStatus() == null) {
+                countryDao.getAllCountries()
+            } else {
+                throw Exception("Exception")
+            }
         }
     }
 
@@ -38,14 +58,11 @@ class CountryRepositoryImpl(
         _countries.value.getOrNull(index)
 
     override suspend fun favorite(country: Country) {
-        favorites = if (favorites.contains(country.commonName)) {
-            favorites - country.commonName
-        } else {
-            favorites + country.commonName
-        }
         val index = _countries.value.indexOf(country)
         val mutableCountries = _countries.value.toMutableList()
-        mutableCountries[index] = mutableCountries[index].copy(isFavorite = favorites.contains(country.commonName))
+        val updatedCountry = country.copy(isFavorite = !country.isFavorite)
+        mutableCountries[index] = updatedCountry
+        countryDao.updateCountry(updatedCountry)
         _countries.value = mutableCountries.toList()
     }
 }

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Help
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -16,9 +17,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.kodeco.android.countryinfo.R
+import com.kodeco.android.countryinfo.datastore.CountryPrefsImpl
 import com.kodeco.android.countryinfo.models.Country
 import com.kodeco.android.countryinfo.repositories.CountryRepository
 import com.kodeco.android.countryinfo.sample.sampleCountries
@@ -26,6 +29,7 @@ import com.kodeco.android.countryinfo.sample.sampleCountry
 import com.kodeco.android.countryinfo.ui.components.CountryInfoList
 import com.kodeco.android.countryinfo.ui.components.Error
 import com.kodeco.android.countryinfo.ui.components.Loading
+import com.kodeco.android.countryinfo.ui.screens.CountryListAndSettingsViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -33,17 +37,27 @@ import kotlinx.coroutines.flow.asStateFlow
 @SuppressLint("UnusedCrossfadeTargetStateParameter")
 @Composable
 fun CountryListScreen(
-    viewModel: CountryListViewModel,
+    viewModel: CountryListAndSettingsViewModel,
     onCountryRowTap: (countryIndex: Int) -> Unit,
     onAboutTap: () -> Unit,
+    onSettingsTap: () -> Unit,
 ) {
     val state by viewModel.uiState.collectAsState()
+    val favoritesState by viewModel.getFavorite().collectAsState(initial = true)
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(text = stringResource(id = R.string.country_info_screen_title)) },
                 actions = {
+                    IconButton(
+                        onClick = onSettingsTap,
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Settings,
+                            contentDescription = stringResource(R.string.settings),
+                        )
+                    }
                     IconButton(
                         onClick = onAboutTap,
                     ) {
@@ -73,6 +87,7 @@ fun CountryListScreen(
                     onRefreshTap = viewModel::fetchCountries,
                     onCountryRowTap = onCountryRowTap,
                     onCountryRowFavorite = viewModel::favorite,
+                    currentToggleState = favoritesState
                 )
                 is CountryListState.Error -> Error(
                     userFriendlyMessageText = stringResource(id = R.string.country_info_error),
@@ -87,8 +102,9 @@ fun CountryListScreen(
 @Preview
 @Composable
 fun CountryInfoScreenPreview() {
+    val context = LocalContext.current
     CountryListScreen(
-        viewModel = CountryListViewModel(
+        viewModel = CountryListAndSettingsViewModel(
             repository = object : CountryRepository {
                 override val countries: Flow<List<Country>>
                     get() = MutableStateFlow(sampleCountries).asStateFlow()
@@ -99,8 +115,10 @@ fun CountryInfoScreenPreview() {
 
                 override suspend fun favorite(country: Country) {}
             },
+            prefs = CountryPrefsImpl(context)
         ),
         onCountryRowTap = {},
         onAboutTap = {},
+        onSettingsTap = {}
     )
 }
