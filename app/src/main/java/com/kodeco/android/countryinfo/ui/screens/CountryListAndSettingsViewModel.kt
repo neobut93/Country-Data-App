@@ -1,10 +1,11 @@
-package com.kodeco.android.countryinfo.ui.screens.countrylist
+package com.kodeco.android.countryinfo.ui.screens
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kodeco.android.countryinfo.datastore.CountryPrefsImpl
 import com.kodeco.android.countryinfo.models.Country
 import com.kodeco.android.countryinfo.repositories.CountryRepository
+import com.kodeco.android.countryinfo.ui.screens.countrylist.CountryListState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +16,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class CountryListViewModel @Inject constructor(
+class CountryListAndSettingsViewModel @Inject constructor(
     private val repository: CountryRepository,
     private val prefs: CountryPrefsImpl
 ) : ViewModel() {

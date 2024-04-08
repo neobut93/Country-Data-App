@@ -18,8 +18,8 @@ private val Context.dataStore by preferencesDataStore(name = STORE_NAME)
 
 class CountryPrefsImpl @Inject constructor(@ApplicationContext context: Context) : CountryPrefs {
 
-    val favoriteKey = booleanPreferencesKey("favorite_key")
-    val databaseKey = booleanPreferencesKey("database_key")
+    private val favoriteKey = booleanPreferencesKey("favorite_key")
+    private val databaseKey = booleanPreferencesKey("database_key")
 
     private val dataStore = context.dataStore
 
@@ -65,7 +65,7 @@ class CountryPrefsImpl @Inject constructor(@ApplicationContext context: Context)
         }
     }
 
-    suspend fun getToggle(): Boolean? {
+    suspend fun getLocalStorageToggle(): Boolean? {
         val toggle =  dataStore.data.first()
         return toggle[databaseKey]
     }

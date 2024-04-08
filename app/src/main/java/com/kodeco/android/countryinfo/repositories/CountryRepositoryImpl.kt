@@ -1,34 +1,26 @@
 package com.kodeco.android.countryinfo.repositories
 
-import android.util.Log
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.lifecycle.asLiveData
 import com.kodeco.android.countryinfo.database.CountryDao
 import com.kodeco.android.countryinfo.datastore.CountryPrefsImpl
 import com.kodeco.android.countryinfo.models.Country
 import com.kodeco.android.countryinfo.network.CountryService
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.withContext
-import java.lang.NullPointerException
 
 class CountryRepositoryImpl(
     private val service: CountryService,
     private val countryDao: CountryDao,
     private val prefs: CountryPrefsImpl,
-    ) : CountryRepository {
+) : CountryRepository {
 
     private val _countries: MutableStateFlow<List<Country>> = MutableStateFlow(emptyList())
     override val countries: StateFlow<List<Country>> = _countries.asStateFlow()
 
-    suspend fun getBoolean(): Boolean? {
-       return coroutineScope {
-            prefs.getToggle()
+    private suspend fun getLocalStorageToggleStatus(): Boolean? {
+        return coroutineScope {
+            prefs.getLocalStorageToggle()
         }
     }
 
@@ -54,7 +46,7 @@ class CountryRepositoryImpl(
                 throw Exception("Request failed: ${countriesResponse.message()}")
             }
         } catch (e: Exception) {
-            if (getBoolean()==true) {
+            if (getLocalStorageToggleStatus() == true) {
                 countryDao.getAllCountries()
             } else {
                 throw Exception("Exception")
