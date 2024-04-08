@@ -46,7 +46,7 @@ class CountryRepositoryImpl(
                 throw Exception("Request failed: ${countriesResponse.message()}")
             }
         } catch (e: Exception) {
-            if (getLocalStorageToggleStatus() == true) {
+            if (getLocalStorageToggleStatus() == true || getLocalStorageToggleStatus() == null) {
                 countryDao.getAllCountries()
             } else {
                 throw Exception("Exception")
